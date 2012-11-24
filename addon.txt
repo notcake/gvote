@@ -1,0 +1,9 @@
+"AddonInfo"
+{
+	"name"        "GVote"
+	"version"     "0.01"
+	"author_name" "!cake"
+	"author_url"  ""
+	"info"        "Fair and balanced."
+	"override"    "0"
+}
