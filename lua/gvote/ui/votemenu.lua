@@ -399,6 +399,9 @@ function PANEL:OnChoiceRemoved (choiceId)
 			break
 		end
 	end
+	for _, itemEntry in ipairs (self.Items) do
+		self:UpdateItemEntry (itemEntry)
+	end
 end
 
 function PANEL:UpdateChoiceText (itemEntry)
