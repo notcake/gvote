@@ -79,9 +79,12 @@ function PANEL:Init ()
 			if visible then
 				self.AlphaController:SetTargetAlpha (255)
 				
-				hook.Add ("HUDPaint", "GVote.Menu",
+				hook.Add ("HUDPaint", "GVote.Menu." .. tostring (self:GetTable ()),
 					function ()
 						local x, y = self:GetPos ()
+						
+						surface.SetAlphaMultiplier (self:GetAlpha () / 255)
+						
 						for k, itemEntry in ipairs (self.Items) do
 							local _, cy = itemEntry.Control:GetPos ()
 							
@@ -109,17 +112,23 @@ function PANEL:Init ()
 								draw.RoundedBoxEx (round, x - w, y + cy, w, h, itemColors [k % #itemColors], true, false, true, false)
 							end
 						end
+						
+						surface.SetAlphaMultiplier (1)
 					end
 				)
-				hook.Add ("PlayerBindPress", "GVote.Menu",
+				hook.Add ("PlayerBindPress", "GVote.Menu." .. tostring (self:GetTable ()),
 					function (ply, bind, pressed)
 						if not pressed then return end
 						if not self or not self:IsValid () then return end
 						if not self.Vote then return end
 						if not self.Vote:IsInProgress () then return end
 						
-						local number = string.match (string.lower (bind), "slot([0-9]+)")
-						number = tonumber (number or "")
+						local number
+						for i = 0, 9 do
+							if input.IsKeyDown (KEY_0 + i) then
+								number = i
+							end
+						end
 						if not number then return end
 						if number == 0 then number = nil end
 						
@@ -143,8 +152,9 @@ function PANEL:Init ()
 			else
 				self.AlphaController:SetTargetAlpha (0)
 				
-				hook.Remove ("HUDPaint", "GVote.Menu")
-				hook.Remove ("PlayerBindPress", "GVote.Menu")
+				hook.Remove ("HUDPaint",        "GVote.Menu." .. tostring (self:GetTable ()))
+				hook.Remove ("PlayerBindPress", "GVote.Menu." .. tostring (self:GetTable ()))
+				hook.Remove ("Think",           "GVote.Menu." .. tostring (self:GetTable ()))
 			end
 		end
 	)
@@ -241,7 +251,10 @@ function PANEL:SetVote (vote)
 	self.LastBeepSecond = 0
 	
 	if self.Vote then
-		self.TitleLabel:SetText (self.Vote and self.Vote:GetText () or "")
+		local questionText = self.Vote and self.Vote:GetText () or ""
+		questionText = questionText:gsub (":you:", LocalPlayer ():Name ())
+		questionText = questionText:gsub (":YOU:", LocalPlayer ():Name ():upper ())
+		self.TitleLabel:SetText (questionText)
 		
 		for i = 1, self.Vote:GetChoiceCount () do
 			local choiceId, text = self.Vote:GetChoice (i)
@@ -273,7 +286,7 @@ function PANEL:HookVote (vote)
 			for _, itemEntry in ipairs (self.Items) do
 				if itemEntry.ChoiceId == choiceId then
 					itemEntry.Text = text
-					self:UpdateChoiceEntry (itemEntry)
+					self:UpdateChoiceText (itemEntry)
 					self:InvalidateLayout ()
 					break
 				end
@@ -288,9 +301,6 @@ function PANEL:HookVote (vote)
 	)
 	vote:AddEventListener ("UserVoteChanged", tostring (self:GetTable ()),
 		function (_, userId, _, choiceId)
-			if userId ~= LocalPlayer ():SteamID () then
-				surface.PlaySound ("buttons/button9.wav")
-			end
 			for _, itemEntry in ipairs (self.Items) do
 				self:UpdateItemEntry (itemEntry)
 			end
@@ -302,6 +312,9 @@ function PANEL:HookVote (vote)
 				if SysTime () - (self.LastNotificationTimes [userId] or 0) > 1 then
 					self.LastNotificationTimes [userId] = SysTime ()
 					notification.AddLegacy (name .. " voted for \"" .. text .. "\"!", NOTIFY_HINT, 3)
+					if userId ~= LocalPlayer ():SteamID () then
+						surface.PlaySound ("buttons/button9.wav")
+					end
 				end
 				MsgN (name .. " voted for \"" .. text .. "\"!")
 			end
@@ -365,8 +378,7 @@ function PANEL:OnChoiceAdded (choiceId, text)
 	itemEntry.BarController:SetValue (0)
 	itemEntry.BarController:SetTargetValue (self.Vote:GetChoiceVoteCount (itemEntry.ChoiceId) * 32)
 	
-	self:UpdateChoiceEntry (itemEntry)
-	
+	self:UpdateChoiceText (itemEntry)
 	self:UpdateItemEntry (itemEntry)
 	self:InvalidateLayout ()
 end
@@ -378,15 +390,26 @@ function PANEL:OnChoiceRemoved (choiceId)
 			itemEntry.AlphaController:dtor ()
 			itemEntry.BarController:dtor ()
 			table.remove (self.Items, k)
+			
+			for i = k, #self.Items do
+				self:UpdateChoiceText (self.Items [i])
+			end
+			
 			self:InvalidateLayout ()
 			break
 		end
 	end
 end
 
-function PANEL:UpdateChoiceEntry (itemEntry)
-	itemEntry.Control:SetText (tostring (self.Vote:GetChoiceIndex (itemEntry.ChoiceId)) .. ". " .. itemEntry.Text)
-	itemEntry.Gay = string.find (itemEntry.Text, "=rainbow=") and true or false
+function PANEL:UpdateChoiceText (itemEntry)
+	local choiceText = itemEntry.Text or ""
+	local gay = (string.find (string.lower (choiceText), "=rainbow=") or string.find (string.lower (choiceText), "=gaybow=")) and true or false
+	
+	choiceText = choiceText:gsub (":you:", LocalPlayer ():Name ())
+	choiceText = choiceText:gsub (":YOU:", LocalPlayer ():Name ():upper ())
+	
+	itemEntry.Control:SetText (tostring (self.Vote:GetChoiceIndex (itemEntry.ChoiceId)) .. ". " .. choiceText)
+	itemEntry.Gay = gay
 end
 
 -- Event handlers
