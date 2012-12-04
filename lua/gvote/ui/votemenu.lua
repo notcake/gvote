@@ -74,6 +74,21 @@ function PANEL:Init ()
 	self.AlphaController:SetTickController (self.TickProvider)
 	self.AlphaController:AddControl (self)
 	
+	self.KeyboardMonitor = Gooey.KeyboardMonitor ()
+	for i = 0, 9 do
+		self.KeyboardMonitor:RegisterKey (_G ["KEY_" .. tostring (i)])
+	end
+	self.KeyboardMonitor:AddEventListener ("KeyPressed",
+		function (_, key)
+			for i = 0, 9 do
+				if _G ["KEY_" .. tostring (i)] == key then
+					self:OnNumberPressed (i)
+					break
+				end
+			end
+		end
+	)
+	
 	self:AddEventListener ("VisibleChanged",
 		function (_, visible)
 			if visible then
@@ -120,8 +135,6 @@ function PANEL:Init ()
 					function (ply, bind, pressed)
 						if not pressed then return end
 						if not self or not self:IsValid () then return end
-						if not self.Vote then return end
-						if not self.Vote:IsInProgress () then return end
 						
 						local number
 						for i = 0, 9 do
@@ -130,23 +143,7 @@ function PANEL:Init ()
 							end
 						end
 						if not number then return end
-						if number == 0 then number = nil end
-						
-						if number and (number <= 0 or number > self.Vote:GetChoiceCount ()) then return end
-						
-						local existingChoice = self.Vote:GetUserVote (LocalPlayer ():SteamID ())
-						if not existingChoice or not number then
-							local choiceId = number and self.Vote:GetChoiceId (number) or nil
-							
-							local outBuffer = GVote.Net.OutBuffer ()
-							outBuffer:UInt32 (self.Vote:GetId () or 0)
-							outBuffer:UInt16 (choiceId and choiceId or 0xFFFF)
-							GVote.Net.DispatchPacket (GLib.GetServerId (), "gvote", outBuffer)
-							
-							self.Vote:SetUserVote (LocalPlayer ():SteamID (), choiceId)
-							surface.PlaySound ("buttons/button9.wav")
-							return true
-						end
+						return self:OnNumberPressed (number)
 					end
 				)
 			else
@@ -312,7 +309,7 @@ function PANEL:HookVote (vote)
 				if SysTime () - (self.LastNotificationTimes [userId] or 0) > 1 then
 					self.LastNotificationTimes [userId] = SysTime ()
 					notification.AddLegacy (name .. " voted for \"" .. text .. "\"!", NOTIFY_HINT, 3)
-					if userId ~= LocalPlayer ():SteamID () then
+					if userId ~= GLib.GetLocalId () then
 						surface.PlaySound ("buttons/button9.wav")
 					end
 				end
@@ -354,14 +351,14 @@ end
 function PANEL:UpdateItemEntry (itemEntry)
 	local totalVotes = self.Vote:GetTotalVotes ()
 	
-	local localChoiceId = self.Vote:GetUserVote (LocalPlayer ():SteamID ())
+	local localChoiceId = self.Vote:GetUserVote (GLib.GetLocalId ())
 	itemEntry.AlphaController:SetTargetAlpha ((not localChoiceId or itemEntry.ChoiceId == localChoiceId) and 255 or 128)
 	itemEntry.BarController:SetTargetValue (self.Vote:GetChoiceVoteCount (itemEntry.ChoiceId) * 32)
 end
 
 -- Internal, do not call
 function PANEL:OnChoiceAdded (choiceId, text)
-	local localChoiceId = self.Vote:GetUserVote (LocalPlayer ():SteamID ())
+	local localChoiceId = self.Vote:GetUserVote (GLib.GetLocalId ())
 	local itemEntry = {}
 	self.Items [#self.Items + 1] = itemEntry
 	itemEntry.ChoiceId = choiceId
@@ -404,6 +401,31 @@ function PANEL:OnChoiceRemoved (choiceId)
 	end
 end
 
+-- Returns true to suppress keybind from being processed
+function PANEL:OnNumberPressed (number)
+	if not self.Vote then return end
+	if not self.Vote:IsInProgress () then return end
+	
+	if number == 0 then number = nil end
+	
+	if number and (number <= 0 or number > self.Vote:GetChoiceCount ()) then return end
+	
+	local existingChoice = self.Vote:GetUserVote (GLib.GetLocalId ())
+	if not existingChoice or not number then
+		local choiceId = number and self.Vote:GetChoiceId (number) or nil
+		if choiceId ~= self.Vote:GetUserVote (GLib.GetLocalId ()) then
+			local outBuffer = GVote.Net.OutBuffer ()
+			outBuffer:UInt32 (self.Vote:GetId () or 0)
+			outBuffer:UInt16 (choiceId and choiceId or 0xFFFF)
+			GVote.Net.DispatchPacket (GLib.GetServerId (), "gvote", outBuffer)
+			
+			self.Vote:SetUserVote (GLib.GetLocalId (), choiceId)
+			surface.PlaySound ("buttons/button9.wav")
+		end
+		return true
+	end
+end
+
 function PANEL:UpdateChoiceText (itemEntry)
 	local choiceText = itemEntry.Text or ""
 	local gay = (string.find (string.lower (choiceText), "=rainbow=") or string.find (string.lower (choiceText), "=gaybow=")) and true or false
@@ -418,6 +440,8 @@ end
 -- Event handlers
 function PANEL:OnRemoved ()
 	GVote:RemoveEventListener ("Unloaded", tostring (self:GetTable ()))
+	self.KeyboardMonitor:dtor ()
+	
 	self:SetVote (nil)
 	self:SetVisible (false)
 end
