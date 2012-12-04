@@ -36,6 +36,8 @@ function PANEL:Init ()
 	self.Vote = nil
 	self.LastBeepSecond = 0
 	
+	self.TickProvider = Gooey.TickProvider ()
+	
 	self.FooterY = 0
 	
 	self.TitleLabel = vgui.Create ("GLabelX", self)
@@ -43,9 +45,16 @@ function PANEL:Init ()
 	self.TitleLabel:SetFont ("DermaDefaultBold")
 	
 	self.Items = {}
-	self.LastNotificationTimes = {}
+	self.CancelItem = vgui.Create ("GLabelX", self)
+	self.CancelItem:SetText ("0. Cancel")
+	self.CancelItem:SetFont ("DermaDefaultBold")
+	self.CancelAlphaController = Gooey.AlphaController ()
+	self.CancelAlphaController:SetAlpha (128)
+	self.CancelAlphaController:SetTargetAlpha (128)
+	self.CancelAlphaController:SetTickController (self.TickProvider)
+	self.CancelAlphaController:AddControl (self.CancelItem)
 	
-	self.TickProvider = Gooey.TickProvider ()
+	self.LastNotificationTimes = {}
 	
 	self.CountdownIcon = vgui.Create ("GImage", self)
 	self.CountdownIcon:SetImage ("icon16/clock.png")
@@ -203,6 +212,12 @@ function PANEL:PerformLayout ()
 		w = math.max (w, self.Items [i].Control:GetWide () + 24)
 		y = y + self.Items [i].Control:GetTall ()
 	end
+	y = y + self.CancelItem:GetTall ()
+	
+	self.CancelItem:SetPos (24, y)
+	self:ResizeLabel (self.CancelItem)
+	w = math.max (w, self.CancelItem:GetWide () + 24)
+	y = y + self.CancelItem:GetTall ()
 	
 	y = y + 4
 	self:ResizeLabel (self.CountdownLabel, 256 - 8 - 4 - self.CountdownIcon:GetWide ())
@@ -301,6 +316,7 @@ function PANEL:HookVote (vote)
 			for _, itemEntry in ipairs (self.Items) do
 				self:UpdateItemEntry (itemEntry)
 			end
+			self:UpdateCancelItemEntry ()
 			
 			local name = GLib.Net.PlayerMonitor:GetUserName (userId)
 			local text = self.Vote:GetChoiceText (choiceId) or ""
@@ -348,6 +364,22 @@ function PANEL:UnhookVote (vote)
 	vote:RemoveEventListener ("VoteEnded",         tostring (self:GetTable ()))
 end
 
+function PANEL:UpdateCancelItemEntry ()
+	local localChoiceId = self.Vote:GetUserVote (GLib.GetLocalId ())
+	self.CancelAlphaController:SetTargetAlpha (localChoiceId and 255 or 128)
+end
+
+function PANEL:UpdateChoiceText (itemEntry)
+	local choiceText = itemEntry.Text or ""
+	local gay = (string.find (string.lower (choiceText), "=rainbow=") or string.find (string.lower (choiceText), "=gaybow=")) and true or false
+	
+	choiceText = choiceText:gsub (":you:", LocalPlayer ():Name ())
+	choiceText = choiceText:gsub (":YOU:", LocalPlayer ():Name ():upper ())
+	
+	itemEntry.Control:SetText (tostring (self.Vote:GetChoiceIndex (itemEntry.ChoiceId)) .. ". " .. choiceText)
+	itemEntry.Gay = gay
+end
+
 function PANEL:UpdateItemEntry (itemEntry)
 	local totalVotes = self.Vote:GetTotalVotes ()
 	
@@ -356,7 +388,6 @@ function PANEL:UpdateItemEntry (itemEntry)
 	itemEntry.BarController:SetTargetValue (self.Vote:GetChoiceVoteCount (itemEntry.ChoiceId) * 32)
 end
 
--- Internal, do not call
 function PANEL:OnChoiceAdded (choiceId, text)
 	local localChoiceId = self.Vote:GetUserVote (GLib.GetLocalId ())
 	local itemEntry = {}
@@ -424,17 +455,6 @@ function PANEL:OnNumberPressed (number)
 		end
 		return true
 	end
-end
-
-function PANEL:UpdateChoiceText (itemEntry)
-	local choiceText = itemEntry.Text or ""
-	local gay = (string.find (string.lower (choiceText), "=rainbow=") or string.find (string.lower (choiceText), "=gaybow=")) and true or false
-	
-	choiceText = choiceText:gsub (":you:", LocalPlayer ():Name ())
-	choiceText = choiceText:gsub (":YOU:", LocalPlayer ():Name ():upper ())
-	
-	itemEntry.Control:SetText (tostring (self.Vote:GetChoiceIndex (itemEntry.ChoiceId)) .. ". " .. choiceText)
-	itemEntry.Gay = gay
 end
 
 -- Event handlers
