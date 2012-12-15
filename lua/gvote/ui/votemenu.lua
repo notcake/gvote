@@ -207,7 +207,7 @@ function PANEL:PerformLayout ()
 	
 	for i = 1, #self.Items do
 		self.Items [i].Control:SetPos (24, y)
-		self:ResizeLabelX (self.Items [i].Control, 256 - 20)
+		self:ResizeLabelX (self.Items [i].Control, 256 - 16)
 		
 		w = math.max (w, self.Items [i].Control:GetWide () + 24)
 		y = y + self.Items [i].Control:GetTall ()
