@@ -4,7 +4,9 @@ GVote = GVote or {}
 include ("glib/glib.lua")
 
 GLib.Initialize ("GVote", GVote)
-GVote.AddCSLuaFolderRecursive ("gvote")
+GLib.AddCSLuaPackFile ("autorun/gvote.lua")
+GLib.AddCSLuaPackFolderRecursive ("gvote")
+GLib.AddCSLuaPackSystem ("GVote")
 
 include ("vote.lua")
 include ("votenetworker.lua")
