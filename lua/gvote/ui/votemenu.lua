@@ -199,7 +199,7 @@ function PANEL:PerformLayout ()
 	local y = 8
 	
 	self.TitleLabel:SetPos (8, y)
-	self:ResizeLabel (self.TitleLabel)
+	self:ResizeLabelX (self.TitleLabel)
 	y = y + self.TitleLabel:GetTall ()
 	y = y + 8
 	
@@ -207,7 +207,7 @@ function PANEL:PerformLayout ()
 	
 	for i = 1, #self.Items do
 		self.Items [i].Control:SetPos (24, y)
-		self:ResizeLabel (self.Items [i].Control)
+		self:ResizeLabelX (self.Items [i].Control, 256 - 20)
 		
 		w = math.max (w, self.Items [i].Control:GetWide () + 24)
 		y = y + self.Items [i].Control:GetTall ()
@@ -234,6 +234,17 @@ function PANEL:PerformLayout ()
 	
 	self:SetSize (w, y + 4)
 	self:SetPos (ScrW () - self:GetWide (), (ScrH () - self:GetTall ()) * 0.5)
+end
+
+function PANEL:ResizeLabelX (control, maxWidth)
+	if control.LastSizedText == control:GetText () then return end
+	control.LastSizedText = control:GetText ()
+	
+	control:SetContentAlignment (5)
+	
+	control:SetWrap (true)
+	control:SetWide (maxWidth or 256)
+	control:SizeToContents ()
 end
 
 function PANEL:ResizeLabel (control, maxWidth)
