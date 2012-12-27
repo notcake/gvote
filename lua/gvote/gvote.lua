@@ -2,6 +2,7 @@ if GVote then return end
 GVote = GVote or {}
 
 include ("glib/glib.lua")
+include ("gooey/gooey.lua")
 
 GLib.Initialize ("GVote", GVote)
 GLib.AddCSLuaPackFile ("autorun/gvote.lua")
