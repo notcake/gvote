@@ -46,4 +46,6 @@ function GVote.Vote (question, ...)
 	end
 	
 	GVote.VoteQueue:Enqueue (vote)
+	
+	return vote
 end
