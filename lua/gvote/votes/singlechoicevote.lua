@@ -70,7 +70,7 @@ function self:Deserialize (inBuffer)
 	end
 end
 
-function self:AddChoice (text)
+function self:AddChoice (choiceText)
 	if #self.Choices >= 150 then
 		GVote.Error ("SingleChoiceVote:AddChoice : Too many vote choices.")
 		error ("SingleChoiceVote:AddChoice : Too many vote choices.")
@@ -80,11 +80,17 @@ function self:AddChoice (text)
 	local choiceId = self.NextChoiceId
 	self.NextChoiceId = self.NextChoiceId + 1
 	
-	text = tostring (text)
-	local choice = text
+	choiceText = tostring (choiceText)
+	local choice = choiceText
 	self.ChoicesById [choiceId] = choice
 	self.Choices [#self.Choices + 1] = choiceId
-	self:DispatchEvent ("ChoiceAdded", choiceId, text)
+	self:DispatchEvent ("ChoiceAdded", choiceId, choiceText)
+end
+
+function self:AddChoices (choices)
+	for _, choiceText in ipairs (choices) do
+		self:AddChoice (tostring (choiceText))
+	end
 end
 
 function self:GetChoice (index)
