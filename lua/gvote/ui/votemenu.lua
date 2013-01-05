@@ -89,6 +89,9 @@ function PANEL:Init ()
 	end
 	self.KeyboardMonitor:AddEventListener ("KeyPressed",
 		function (_, key)
+			if gui.IsGameUIVisible ()   then return end
+			if vgui.GetKeyboardFocus () then return end
+			
 			for i = 0, 9 do
 				if _G ["KEY_" .. tostring (i)] == key then
 					self:OnNumberPressed (i)
@@ -479,7 +482,7 @@ end
 
 function PANEL:Think ()
 	local remainingTime = self.Vote and self.Vote:GetRemainingTime () or 0
-	self.CountdownLabel:SetText (string.format ("%02d:%02d", math.floor (remainingTime / 60), remainingTime % 60))
+	self.CountdownLabel:SetText (string.format ("%02d:%02d", math.floor (remainingTime / 60), math.floor (remainingTime % 60)))
 	if self.Vote and self.Vote:HasEnded () then
 		self.CountdownAlphaController:SetTargetAlpha (0)
 		self.CreditsAlphaController  :SetTargetAlpha (255)

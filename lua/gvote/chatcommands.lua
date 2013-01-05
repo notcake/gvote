@@ -1,24 +1,59 @@
+function GVote.CanPlayerCreateVote (ply)
+	if not ply or not ply:IsValid () then return true end
+	if ply:IsAdmin () then return true end
+	return false
+end
+
 if SERVER then
-	timer.Simple (1,
-		function ()
-			if not aowl then return end
-			aowl.AddCommand ("vote",
-				function (ply, _, question, ...)
+	local function registerAowlCommands ()
+		aowl.AddCommand ("vote",
+			function (ply, _, question, ...)
+				local choices = {...}
+				local currentVote = GVote.CurrentVote
+				
+				-- Only allow choice selection for SingleChoiceVotes
+				if currentVote and
+				   currentVote:GetType () ~= "SingleChoiceVote" then
+					currentVote = nil
+				end
+				
+				if #choices > 0 or not currentVote then
+					-- Creating a vote
+					if not GVote.CanPlayerCreateVote (ply) then
+						ply:ChatPrint ("You are not allowed to create votes.")
+						return
+					end
+					
 					if not question then
 						ply:ChatPrint ("You need to provide a question and at least 2 choices.")
 						return
 					end
 					
-					local choices = {...}
 					if #choices < 2 then
 						ply:ChatPrint ("You need to provide at least 2 choices.")
 						return
 					end
 					
 					GVote.Vote (question, ...)
-				end,
-				"developers"
-			)
-		end
-	)
+				else
+					-- Voting
+					local choiceIndex = tonumber (question)
+					if not choiceIndex or not currentVote:GetChoice (choiceIndex) then
+						ply:ChatPrint ("You did not provide a valid choice number!")
+						return
+					end
+					
+					local choiceId = currentVote:GetChoice (choiceIndex)
+					currentVote:SetUserVote (GLib.GetPlayerId (ply), choiceId)
+				end
+			end,
+			"players"
+		)
+	end
+	
+	if aowl then
+		registerAowlCommands ()
+	else
+		hook.Add ("AowlInitialized", "GVote", registerAowlCommands)
+	end
 end

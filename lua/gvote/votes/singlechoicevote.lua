@@ -93,6 +93,10 @@ function self:AddChoices (choices)
 	end
 end
 
+function self:ChoiceExists (choiceId)
+	return self.ChoicesById [choiceId] and true or false
+end
+
 function self:GetChoice (index)
 	return self.Choices [index], self:GetChoiceText (self.Choices [index])
 end
