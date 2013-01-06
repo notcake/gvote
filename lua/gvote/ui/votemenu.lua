@@ -1,16 +1,18 @@
 local PANEL = {}
 
-local itemColors = {}
-itemColors [0] = GLib.Colors.CornflowerBlue
-itemColors [1] = GLib.Colors.Red
-itemColors [2] = GLib.Colors.Green
-itemColors [3] = GLib.Colors.Blue
-itemColors [4] = GLib.Colors.Orange
-itemColors [5] = GLib.Colors.Pink
-itemColors [6] = GLib.Colors.Cyan
-itemColors [7] = GLib.Colors.White
-itemColors [8] = GLib.Colors.Silver
-itemColors [9] = GLib.Colors.SlateBlue
+local itemColors =
+{
+	GLib.Colors.Red,
+	GLib.Colors.Green,
+	GLib.Colors.Blue,
+	GLib.Colors.Orange,
+	GLib.Colors.CornflowerBlue,
+	GLib.Colors.Pink,
+	GLib.Colors.Cyan,
+	GLib.Colors.White,
+	GLib.Colors.Silver,
+	GLib.Colors.SlateBlue
+}
 
 local gayColors =
 {
@@ -137,7 +139,7 @@ function PANEL:Init ()
 									cy = cy + dh
 								end
 							else
-								draw.RoundedBoxEx (round, x - w, y + cy, w, h, itemColors [k % #itemColors], true, false, true, false)
+								draw.RoundedBoxEx (round, x - w, y + cy, w, h, itemColors [1 + k % #itemColors], true, false, true, false)
 							end
 						end
 						
