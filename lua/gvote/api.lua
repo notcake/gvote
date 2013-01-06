@@ -6,6 +6,8 @@ function self:__call (question, ...)
 end
 
 function GVote.Vote (question, ...)
+	question = tostring (question)
+	
 	local choices = {...}
 	local callback = nil
 	if type (choices [#choices]) == "function" then
