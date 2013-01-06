@@ -29,7 +29,8 @@ local creditTexts =
 	"Endorsed by Mitt Romney.",
 	"Metabold Systems - Fair and Balanced.",
 	"Metabold Systems - Totally not rigged.",
-	"Democratic vote rigging in progress..."
+	"Democratic vote rigging in progress...",
+	"146% fair"
 }
 
 function PANEL:Init ()
