@@ -1,6 +1,10 @@
 local self = {}
 GVote.VoteReceiver = GVote.MakeConstructor (self)
 
+if CLIENT then
+	CreateClientConVar ("gvote_enabled", 1, true, false)
+end
+
 function self:ctor ()
 end
 
@@ -9,6 +13,8 @@ function self:HandlePacket (voteId, messageType, inBuffer)
 	if not vote and messageType ~= "VoteCreated" then return end
 	
 	if messageType == "VoteCreated" then
+		if CLIENT and not GetConVar ("gvote_enabled"):GetBool () then return end
+		
 		vote = GVote.VoteTypes:Create (inBuffer:String ())
 		vote:SetId (voteId)
 		vote:Deserialize (inBuffer)
