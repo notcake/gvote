@@ -49,6 +49,33 @@ if SERVER then
 			end,
 			"players"
 		)
+		
+		aowl.AddCommand ("voteadd",
+			function (ply, args)
+				if not GVote.CurrentVote then
+					ply:ChatPrint ("No vote is in progress.")
+					return
+				end
+				GVote.CurrentVote:AddChoice (args)
+			end,
+			"developers"
+		)
+		
+		aowl.AddCommand ("voteaddtime",
+			function (ply, args)
+				if not GVote.CurrentVote then
+					ply:ChatPrint ("No vote is in progress.")
+					return
+				end
+				local duration = tonumber (args)
+				if not duration then
+					ply:ChatPrint ("Invalid duration specified.")
+					return
+				end
+				GVote.CurrentVote:AddTime (duration)
+			end,
+			"developers"
+		)
 	end
 	
 	if aowl then
