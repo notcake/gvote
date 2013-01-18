@@ -20,7 +20,6 @@ include ("api.lua")
 include ("chatcommands.lua")
 
 if CLIENT then
-	include ("gooey/gooey.lua")
 	GVote.IncludeDirectory ("gvote/ui")
 end
 
