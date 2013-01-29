@@ -139,7 +139,7 @@ function PANEL:Init ()
 									cy = cy + dh
 								end
 							else
-								draw.RoundedBoxEx (round, x - w, y + cy, w, h, itemColors [1 + k % #itemColors], true, false, true, false)
+								draw.RoundedBoxEx (round, x - w, y + cy, w, h, GLib.Colors [itemEntry.Text] or itemColors [1 + k % #itemColors], true, false, true, false)
 							end
 						end
 						
