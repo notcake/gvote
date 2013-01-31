@@ -37,6 +37,11 @@ if SERVER then
 					GVote.Vote (question, ...)
 				else
 					-- Voting
+					if currentVote:HasEnded () then
+						ply:ChatPrint ("The current vote has ended!")
+						return
+					end
+					
 					local choiceIndex = tonumber (question)
 					if not choiceIndex or not currentVote:GetChoice (choiceIndex) then
 						ply:ChatPrint ("You did not provide a valid choice number!")
