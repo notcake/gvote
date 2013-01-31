@@ -2,7 +2,7 @@ setmetatable (GVote, getmetatable (GVote) or {})
 local self = getmetatable (GVote)
 
 function self:__call (question, ...)
-	GVote.Vote (question, ...)
+	return GVote.Vote (question, ...)
 end
 
 function GVote.Vote (question, ...)
