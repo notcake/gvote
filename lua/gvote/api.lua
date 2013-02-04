@@ -22,7 +22,9 @@ function GVote.Vote (question, ...)
 	
 	if callback then
 		vote:AddEventListener ("VoteEnded",
-			function ()
+			function (_, voteEndReason)
+				if voteEndReason == GVote.VoteEndReason.Aborted then return end
+				
 				local results = {}
 				results [0] = {}
 				for choiceId, choiceText in vote:GetChoiceEnumerator () do

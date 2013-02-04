@@ -9,7 +9,7 @@ GVote.Vote = GVote.MakeConstructor (self)
 			Fired when the vote text has changed.
 		VoteStarted ()
 			Fired when the vote has started.
-		VoteEnded ()
+		VoteEnded (VoteEndReason voteEndReason)
 			Fired when the vote has started.
 ]]
 
@@ -19,6 +19,7 @@ function self:ctor (id)
 	self.Text = ""
 	
 	self.Started   = false
+	self.Ended     = false
 	self.StartTime = 0
 	self.EndTime   = 0
 	
@@ -56,8 +57,23 @@ function self:Deserialize (inBuffer)
 	end
 end
 
+function self:Abort ()
+	self:End (GVote.VoteEndReason.Aborted)
+end
+
 function self:AddTime (t)
+	if self:HasEnded () then return end
+	
 	self:SetEndTime (self:GetEndTime () + t)
+end
+
+function self:End (voteEndReason)
+	if self.Ended then return end
+	
+	self.Ended = true
+	self.EndTime = CurTime ()
+	
+	self:DispatchEvent ("VoteEnded", voteEndReason or GVote.VoteEndReason.Aborted)
 end
 
 function self:GetElapsedTime ()
@@ -96,6 +112,7 @@ function self:HasStarted ()
 end
 
 function self:HasEnded ()
+	if self.Ended then return true end
 	return self.Started and CurTime () > self.EndTime
 end
 
@@ -136,7 +153,7 @@ end
 function self:Tick ()
 	if self.LastTickTime < self:GetEndTime () and self:HasEnded () then
 		self.LastTickTime = CurTime ()
-		self:DispatchEvent ("VoteEnded")
+		self:End (GVote.VoteEndReason.Timeout)
 	end
 end
 

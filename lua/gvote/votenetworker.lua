@@ -29,8 +29,8 @@ function self:ctor (vote)
 	)
 	
 	self.Vote:AddEventListener ("VoteEnded", tostring (self),
-		function (vote)
-			self:OnVoteEnded (vote)
+		function (vote, voteEndReason)
+			self:OnVoteEnded (vote, voteEndReason)
 		end
 	)
 	
@@ -114,10 +114,11 @@ function self:OnUserVoteChanged (vote, userId, oldChoiceId, choiceId)
 	self:DispatchPacket (outBuffer)
 end
 
-function self:OnVoteEnded (vote)
+function self:OnVoteEnded (vote, voteEndReason)
 	local outBuffer = GLib.Net.OutBuffer ()
 	outBuffer:UInt32 (vote:GetId ())
 	outBuffer:String ("VoteEnded")
+	outBuffer:UInt8 (voteEndReason)
 	self:DispatchPacket (outBuffer)
 end
 

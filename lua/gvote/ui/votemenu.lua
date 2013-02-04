@@ -351,7 +351,7 @@ function PANEL:HookVote (vote)
 		end
 	)
 	vote:AddEventListener ("VoteEnded", tostring (self:GetTable ()),
-		function (_)
+		function (_, voteEndReason)
 			local suppressPrint = false
 			if epoe and type (epoe.Print) == "function" then
 				epoe.Print (self.Vote:ToString ())

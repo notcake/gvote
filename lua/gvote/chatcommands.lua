@@ -72,6 +72,10 @@ if SERVER then
 					ply:ChatPrint ("No vote is in progress.")
 					return
 				end
+				if GVote.CurrentVote:HasEnded () then
+					ply:ChatPrint ("The current vote has ended!")
+					return
+				end
 				local duration = tonumber (args)
 				if not duration then
 					ply:ChatPrint ("Invalid duration specified.")

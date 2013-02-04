@@ -10,6 +10,7 @@ GLib.AddCSLuaPackFolderRecursive ("gvote")
 GLib.AddCSLuaPackSystem ("GVote")
 
 include ("vote.lua")
+include ("voteendreason.lua")
 include ("votenetworker.lua")
 include ("votereceiver.lua")
 

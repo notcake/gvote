@@ -46,6 +46,8 @@ function self:HandlePacket (voteId, messageType, inBuffer)
 		oldChoiceId = oldChoiceId ~= 0xFFFF and oldChoiceId or nil
 		choiceId    = choiceId    ~= 0xFFFF and choiceId    or nil
 		vote:SetUserVote (userId, choiceId)
+	elseif messageType == "VoteEnded" then
+		vote:End (inBuffer:UInt8 ())
 	end
 end
 
