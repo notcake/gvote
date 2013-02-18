@@ -119,7 +119,7 @@ function PANEL:Init ()
 							local _, cy = itemEntry.Control:GetPos ()
 							
 							local h = itemEntry.Control:GetTall ()
-							w = itemEntry.BarController:GetValue ()
+							local w = itemEntry.BarController:GetValue ()
 							
 							local round = 4
 							if w < round * 2 then
