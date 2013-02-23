@@ -388,7 +388,9 @@ end
 
 function PANEL:UpdateChoiceText (itemEntry)
 	local choiceText = itemEntry.Text or ""
-	local gay = (string.find (string.lower (choiceText), "=rainbow=") or string.find (string.lower (choiceText), "=gaybow=")) and true or false
+	local gay = (string.find (string.lower (choiceText), ":rainbow:") 
+			  or string.find (string.lower (choiceText), ":gaybow:")
+			  or string.find (string.lower (choiceText), ":gay:")) and true or false
 	
 	choiceText = choiceText:gsub (":you:", LocalPlayer ():Name ())
 	choiceText = choiceText:gsub (":YOU:", LocalPlayer ():Name ():upper ())
