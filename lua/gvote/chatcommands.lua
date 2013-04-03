@@ -61,6 +61,11 @@ if SERVER then
 					ply:ChatPrint ("No vote is in progress.")
 					return
 				end
+				if not GVote.CurrentVote:IsMolestationAllowed () and
+				   GLib.GetPlayerId (ply) ~= GVote.CurrentVote:GetOwnerId () then
+					ply:ChatPrint ("Molestation of this vote is prohibited.")
+					return
+				end
 				GVote.CurrentVote:AddChoice (args)
 			end,
 			"developers"
@@ -70,6 +75,11 @@ if SERVER then
 			function (ply, args)
 				if not GVote.CurrentVote then
 					ply:ChatPrint ("No vote is in progress.")
+					return
+				end
+				if not GVote.CurrentVote:IsMolestationAllowed () and
+				   GLib.GetPlayerId (ply) ~= GVote.CurrentVote:GetOwnerId () then
+					ply:ChatPrint ("Molestation of this vote is prohibited.")
 					return
 				end
 				if GVote.CurrentVote:HasEnded () then
