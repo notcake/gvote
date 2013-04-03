@@ -20,7 +20,7 @@ GVote.Vote = GVote.MakeConstructor (self)
 function self:ctor (id)
 	self.Id = id
 	self.OwnerId = GLib.GetServerId ()
-	self.MolestationAllowed = false
+	self.MolestationAllowed = true
 	
 	self.Text = ""
 	
