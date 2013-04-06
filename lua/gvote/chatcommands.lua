@@ -35,6 +35,7 @@ if SERVER then
 					end
 					
 					GVote.Vote (question, ...)
+						:SetOwnerId (GLib.GetPlayerId (ply))
 				else
 					-- Voting
 					if currentVote:HasEnded () then
