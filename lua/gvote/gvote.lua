@@ -5,9 +5,9 @@ include ("glib/glib.lua")
 include ("gooey/gooey.lua")
 
 GLib.Initialize ("GVote", GVote)
+GLib.AddCSLuaPackSystem ("GVote")
 GLib.AddCSLuaPackFile ("autorun/gvote.lua")
 GLib.AddCSLuaPackFolderRecursive ("gvote")
-GLib.AddCSLuaPackSystem ("GVote")
 
 include ("vote.lua")
 include ("voteendreason.lua")
