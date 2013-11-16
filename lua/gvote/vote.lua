@@ -165,6 +165,11 @@ end
 function self:SetOwnerId (ownerId)
 	if self.OwnerId == ownerId then return self end
 	
+	if not ownerId then
+		GLib.Error ("Vote:SetOwnerId called with nil value!")
+		ownerId = GLib.GetServerId ()
+	end
+	
 	self.OwnerId = ownerId
 	self:DispatchEvent ("OwnerChanged", self.OwnerId)
 	return self
