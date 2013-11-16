@@ -34,8 +34,13 @@ if SERVER then
 						return
 					end
 					
+					local ownerId = GLib.GetPlayerId (ply)
+					if not ply or not ply:IsValid () then
+						ownerId = GLib.GetServerId ()
+					end
+					
 					GVote.Vote (question, ...)
-						:SetOwnerId (GLib.GetPlayerId (ply))
+						:SetOwnerId (ownerId)
 				else
 					-- Voting
 					if currentVote:HasEnded () then
