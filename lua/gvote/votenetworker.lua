@@ -4,49 +4,49 @@ GVote.VoteNetworker = GVote.MakeConstructor (self)
 function self:ctor (vote)
 	self.Vote = vote
 	
-	self.Vote:AddEventListener ("ChoiceAdded", tostring (self),
+	self.Vote:AddEventListener ("ChoiceAdded", self:GetHashCode (),
 		function (vote, choiceId, text)
 			self:OnChoiceAdded (vote, choiceId, text)
 		end
 	)
 	
-	self.Vote:AddEventListener ("ChoiceRemoved", tostring (self),
+	self.Vote:AddEventListener ("ChoiceRemoved", self:GetHashCode (),
 		function (vote, choiceId)
 			self:OnChoiceRemoved (vote, choiceId, text)
 		end
 	)
 	
-	self.Vote:AddEventListener ("ChoiceTextChanged", tostring (self),
+	self.Vote:AddEventListener ("ChoiceTextChanged", self:GetHashCode (),
 		function (vote, choiceId, text)
 			self:OnChoiceTextChanged (vote, choiceId, text)
 		end
 	)
 	
-	self.Vote:AddEventListener ("EndTimeChanged", tostring (self),
+	self.Vote:AddEventListener ("EndTimeChanged", self:GetHashCode (),
 		function (vote, endTime)
 			self:OnEndTimeChanged (vote, endTime)
 		end
 	)
 	
-	self.Vote:AddEventListener ("VoteEnded", tostring (self),
+	self.Vote:AddEventListener ("VoteEnded", self:GetHashCode (),
 		function (vote, voteEndReason)
 			self:OnVoteEnded (vote, voteEndReason)
 		end
 	)
 	
-	self.Vote:AddEventListener ("VoteStarted", tostring (self),
+	self.Vote:AddEventListener ("VoteStarted", self:GetHashCode (),
 		function (vote)
 			self:OnVoteStarted (vote)
 		end
 	)
 	
-	self.Vote:AddEventListener ("TextChanged", tostring (self),
+	self.Vote:AddEventListener ("TextChanged", self:GetHashCode (),
 		function (vote, text)
 			self:OnTextChanged (vote, text)
 		end
 	)
 	
-	self.Vote:AddEventListener ("UserVoteChanged", tostring (self),
+	self.Vote:AddEventListener ("UserVoteChanged", self:GetHashCode (),
 		function (vote, userId, oldChoiceId, choiceId)
 			self:OnUserVoteChanged (vote, userId, oldChoiceId, choiceId)
 		end

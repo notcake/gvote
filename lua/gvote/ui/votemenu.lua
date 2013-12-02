@@ -109,7 +109,7 @@ function PANEL:Init ()
 			if visible then
 				self.AlphaController:SetTargetAlpha (255)
 				
-				hook.Add ("HUDPaint", "GVote.Menu." .. tostring (self:GetTable ()),
+				hook.Add ("HUDPaint", "GVote.Menu." .. self:GetHashCode (),
 					function ()
 						local x, y = self:GetPos ()
 						
@@ -146,7 +146,7 @@ function PANEL:Init ()
 						surface.SetAlphaMultiplier (1)
 					end
 				)
-				hook.Add ("PlayerBindPress", "GVote.Menu." .. tostring (self:GetTable ()),
+				hook.Add ("PlayerBindPress", "GVote.Menu." .. self:GetHashCode (),
 					function (ply, bind, pressed)
 						if not pressed then return end
 						if not self or not self:IsValid () then return end
@@ -164,14 +164,14 @@ function PANEL:Init ()
 			else
 				self.AlphaController:SetTargetAlpha (0)
 				
-				hook.Remove ("HUDPaint",        "GVote.Menu." .. tostring (self:GetTable ()))
-				hook.Remove ("PlayerBindPress", "GVote.Menu." .. tostring (self:GetTable ()))
-				hook.Remove ("Think",           "GVote.Menu." .. tostring (self:GetTable ()))
+				hook.Remove ("HUDPaint",        "GVote.Menu." .. self:GetHashCode ())
+				hook.Remove ("PlayerBindPress", "GVote.Menu." .. self:GetHashCode ())
+				hook.Remove ("Think",           "GVote.Menu." .. self:GetHashCode ())
 			end
 		end
 	)
 	
-	GVote:AddEventListener ("Unloaded", tostring (self:GetTable ()),
+	GVote:AddEventListener ("Unloaded", self:GetHashCode (),
 		function ()
 			self:Remove ()
 		end
@@ -300,17 +300,17 @@ end
 function PANEL:HookVote (vote)
 	if not vote then return end
 	
-	vote:AddEventListener ("ChoiceAdded", tostring (self:GetTable ()),
+	vote:AddEventListener ("ChoiceAdded", self:GetHashCode (),
 		function (_, choiceId, text)
 			self:OnChoiceAdded (choiceId, text)
 		end
 	)
-	vote:AddEventListener ("ChoiceRemoved", tostring (self:GetTable ()),
+	vote:AddEventListener ("ChoiceRemoved", self:GetHashCode (),
 		function (_, choiceId)
 			self:OnChoiceRemoved (choiceId)
 		end
 	)
-	vote:AddEventListener ("ChoiceTextChanged", tostring (self:GetTable ()),
+	vote:AddEventListener ("ChoiceTextChanged", self:GetHashCode (),
 		function (_, choiceId, text)
 			for _, itemEntry in ipairs (self.Items) do
 				if itemEntry.ChoiceId == choiceId then
@@ -322,13 +322,13 @@ function PANEL:HookVote (vote)
 			end
 		end
 	)
-	vote:AddEventListener ("TextChanged", tostring (self:GetTable ()),
+	vote:AddEventListener ("TextChanged", self:GetHashCode (),
 		function (_, text)
 			self.TitleLabel:SetText (self.Vote:GetText ())
 			self:InvalidateLayout ()
 		end
 	)
-	vote:AddEventListener ("UserVoteChanged", tostring (self:GetTable ()),
+	vote:AddEventListener ("UserVoteChanged", self:GetHashCode (),
 		function (_, userId, _, choiceId)
 			for _, itemEntry in ipairs (self.Items) do
 				self:UpdateItemEntry (itemEntry)
@@ -350,7 +350,7 @@ function PANEL:HookVote (vote)
 			end
 		end
 	)
-	vote:AddEventListener ("VoteEnded", tostring (self:GetTable ()),
+	vote:AddEventListener ("VoteEnded", self:GetHashCode (),
 		function (_, voteEndReason)
 			local suppressPrint = false
 			if epoe and type (epoe.Print) == "function" then
@@ -364,7 +364,7 @@ function PANEL:HookVote (vote)
 			surface.PlaySound ("buttons/button3.wav")
 		end
 	)
-	vote:AddEventListener ("VoteStarted", tostring (self:GetTable ()),
+	vote:AddEventListener ("VoteStarted", self:GetHashCode (),
 		function (_)
 			surface.PlaySound ("buttons/button3.wav")
 		end
@@ -374,11 +374,11 @@ end
 function PANEL:UnhookVote (vote)
 	if not vote then return end
 	
-	vote:RemoveEventListener ("ChoiceAdded",       tostring (self:GetTable ()))
-	vote:RemoveEventListener ("ChoiceRemoved",     tostring (self:GetTable ()))
-	vote:RemoveEventListener ("TextChanged",       tostring (self:GetTable ()))
-	vote:RemoveEventListener ("UserVoteChanged",   tostring (self:GetTable ()))
-	vote:RemoveEventListener ("VoteEnded",         tostring (self:GetTable ()))
+	vote:RemoveEventListener ("ChoiceAdded",       self:GetHashCode ())
+	vote:RemoveEventListener ("ChoiceRemoved",     self:GetHashCode ())
+	vote:RemoveEventListener ("TextChanged",       self:GetHashCode ())
+	vote:RemoveEventListener ("UserVoteChanged",   self:GetHashCode ())
+	vote:RemoveEventListener ("VoteEnded",         self:GetHashCode ())
 end
 
 function PANEL:UpdateCancelItemEntry ()
@@ -479,7 +479,7 @@ end
 
 -- Event handlers
 function PANEL:OnRemoved ()
-	GVote:RemoveEventListener ("Unloaded", tostring (self:GetTable ()))
+	GVote:RemoveEventListener ("Unloaded", self:GetHashCode ())
 	self.KeyboardMonitor:dtor ()
 	
 	self:SetVote (nil)

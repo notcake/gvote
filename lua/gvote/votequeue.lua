@@ -93,7 +93,7 @@ end
 function self:HookVote (vote)
 	if not vote then return end
 	
-	vote:AddEventListener ("VoteEnded", tostring (self),
+	vote:AddEventListener ("VoteEnded", self:GetHashCode (),
 		function (_, voteEndReason)
 			self:DispatchEvent ("VoteEnded", vote, voteEndReason)
 		end
@@ -103,7 +103,7 @@ end
 function self:UnhookVote (vote)
 	if not vote then return end
 	
-	vote:RemoveEventListener ("VoteEnded", tostring (self))
+	vote:RemoveEventListener ("VoteEnded", self:GetHashCode ())
 end
 
 function self:StartNextVote ()
