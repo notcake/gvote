@@ -71,7 +71,7 @@ function self:Deserialize (inBuffer)
 end
 
 function self:AddChoice (choiceText)
-	if #self.Choices >= 150 then
+	if #self.Choices >= 300 then
 		GVote.Error ("SingleChoiceVote:AddChoice : Too many vote choices.")
 		error ("SingleChoiceVote:AddChoice : Too many vote choices.")
 		return
