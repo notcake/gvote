@@ -38,7 +38,7 @@ function GVote.Vote (question, ...)
 					results [choiceId] [#results [choiceId] + 1] = userId
 				end
 				
-				for userId, ply in GLib.Net.PlayerMonitor:GetPlayerEnumerator () do
+				for userId, ply in GLib.PlayerMonitor:GetPlayerEnumerator () do
 					if not userVotes [userId] then
 						results [0] [#results [0] + 1] = userId
 					end

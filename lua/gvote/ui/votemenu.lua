@@ -335,7 +335,7 @@ function PANEL:HookVote (vote)
 			end
 			self:UpdateCancelItemEntry ()
 			
-			local name = GLib.Net.PlayerMonitor:GetUserName (userId)
+			local name = GLib.PlayerMonitor:GetUserName (userId)
 			local text = self.Vote:GetChoiceText (choiceId) or ""
 			
 			if choiceId then

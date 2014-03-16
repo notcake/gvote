@@ -221,7 +221,7 @@ function self:ToString ()
 		local users = self:GetChoiceUsers (choiceId)
 		vote = vote .. "\t [" .. string.format ("%2d", #users) .. "] " .. tostring (text):gsub ("[\r\n]", " ") .. "\n"
 		for i = 1, #users do
-			local name = GLib.Net.PlayerMonitor:GetUserName (users [i])
+			local name = GLib.PlayerMonitor:GetUserName (users [i])
 			if name == users [i] then name = nil end
 			vote = vote .. "\t\t" .. users [i] .. (name and (" (" .. name .. ")") or "") .. "\n"
 		end
