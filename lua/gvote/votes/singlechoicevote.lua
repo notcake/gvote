@@ -164,11 +164,7 @@ function self:GetUserVote (userId)
 end
 
 function self:GetUserVoteEnumerator ()
-	local next, tbl, key = pairs (self.UserVotes)
-	return function ()
-		key = next (tbl, key)
-		return key, tbl [key]
-	end
+	return GLib.KeyValueEnumerator (self.UserVotes)
 end
 
 function self:RemoveChoice (choiceId)
