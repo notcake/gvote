@@ -32,16 +32,18 @@ function self:Serialize (outBuffer)
 	for i = 1, #self.Choices do
 		outBuffer:UInt16 (self.Choices [i])
 	end
+	
 	for choiceId, text in pairs (self.ChoicesById) do
 		outBuffer:UInt16 (choiceId)
-		outBuffer:String (text)
+		outBuffer:StringN32 (text)
 	end
 	outBuffer:UInt16 (0x0000)
+	
 	for userId, choiceId in pairs (self.UserVotes) do
-		outBuffer:String (userId)
+		outBuffer:StringN8 (userId)
 		outBuffer:UInt16 (choiceId)
 	end
-	outBuffer:String ("")
+	outBuffer:StringN8 ("")
 end
 
 function self:Deserialize (inBuffer)
@@ -55,7 +57,7 @@ function self:Deserialize (inBuffer)
 	
 	local choiceId = inBuffer:UInt16 ()
 	while choiceId ~= 0x0000 do
-		self.ChoicesById [choiceId] = inBuffer:String ()
+		self.ChoicesById [choiceId] = inBuffer:StringN32 ()
 		choiceId = inBuffer:UInt16 ()
 	end
 	
@@ -63,13 +65,14 @@ function self:Deserialize (inBuffer)
 		self:DispatchEvent ("ChoiceAdded", choiceId, text)
 	end
 	
-	local userId = inBuffer:String ()
+	local userId = inBuffer:StringN8 ()
 	while userId ~= "" do
 		self:SetUserVote (userId, inBuffer:UInt16 ())
-		userId = inBuffer:String ()
+		userId = inBuffer:StringN8 ()
 	end
 end
 
+-- SingleChoiceVote
 function self:AddChoice (choiceText)
 	if #self.Choices >= 300 then
 		GVote.Error ("SingleChoiceVote:AddChoice : Too many vote choices.")

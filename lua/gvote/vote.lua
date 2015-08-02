@@ -1,5 +1,5 @@
 local self = {}
-GVote.Vote = GVote.MakeConstructor (self)
+GVote.Vote = GVote.MakeConstructor (self, GLib.Serialization.ISerializable)
 
 --[[
 	Events:
@@ -40,26 +40,26 @@ function self:dtor ()
 	end
 end
 
--- Serialization
+-- ISerializable
 function self:Serialize (outBuffer)
-	outBuffer:String (self.OwnerId)
-	outBuffer:Boolean (self.MolestationAllowed)
+	outBuffer:StringN8  (self.OwnerId           )
+	outBuffer:Boolean   (self.MolestationAllowed)
 	
-	outBuffer:String (self.Text)
-	outBuffer:Boolean (self.Started)
-	outBuffer:Float (self.StartTime)
-	outBuffer:Float (self.EndTime)
+	outBuffer:StringN32 (self.Text              )
+	outBuffer:Boolean   (self.Started           )
+	outBuffer:Float     (self.StartTime         )
+	outBuffer:Float     (self.EndTime           )
 end
 
 function self:Deserialize (inBuffer)
-	self:SetOwnerId (inBuffer:String ())
-	self:SetMolestationAllowed (inBuffer:Boolean ())
+	self:SetOwnerId            (inBuffer:StringN8  ())
+	self:SetMolestationAllowed (inBuffer:Boolean   ())
 	
-	self:SetText (inBuffer:String ())
+	self:SetText               (inBuffer:StringN32 ())
 	
 	self.Started   = inBuffer:Boolean ()
-	self.StartTime = inBuffer:Float ()
-	self.EndTime   = inBuffer:Float ()
+	self.StartTime = inBuffer:Float   ()
+	self.EndTime   = inBuffer:Float   ()
 	
 	if self:HasStarted () then
 		self:DispatchEvent ("VoteStarted")
@@ -69,6 +69,7 @@ function self:Deserialize (inBuffer)
 	end
 end
 
+-- Vote
 function self:Abort ()
 	self:End (GVote.VoteEndReason.Aborted)
 end
