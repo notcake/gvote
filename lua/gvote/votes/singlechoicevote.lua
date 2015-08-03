@@ -44,6 +44,8 @@ function self:Serialize (outBuffer)
 		outBuffer:UInt16 (choiceId)
 	end
 	outBuffer:StringN8 ("")
+	
+	return outBuffer
 end
 
 function self:Deserialize (inBuffer)
@@ -70,6 +72,8 @@ function self:Deserialize (inBuffer)
 		self:SetUserVote (userId, inBuffer:UInt16 ())
 		userId = inBuffer:StringN8 ()
 	end
+	
+	return self
 end
 
 -- SingleChoiceVote

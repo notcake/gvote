@@ -49,6 +49,8 @@ function self:Serialize (outBuffer)
 	outBuffer:Boolean   (self.Started           )
 	outBuffer:Float     (self.StartTime         )
 	outBuffer:Float     (self.EndTime           )
+	
+	return outBuffer
 end
 
 function self:Deserialize (inBuffer)
@@ -67,6 +69,8 @@ function self:Deserialize (inBuffer)
 	if self:HasEnded () then
 		self:DispatchEvent ("VoteEnded")
 	end
+	
+	return self
 end
 
 -- Vote
