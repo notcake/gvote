@@ -28,11 +28,12 @@ local creditTexts =
 {
 	"Provided by Metabold Systems Incorporated.",
 	"\"If the vote were legitimately rigged, the server would have ways of shutting it down.\"",
-	"Endorsed by Mitt Romney.",
 	"Metabold Systems - Fair and Balanced.",
 	"Metabold Systems - Totally not rigged.",
 	"Democratic vote rigging in progress...",
-	"146% fair"
+	"146% fair",
+	"Endorsed by Donald Trump.",
+	"We're going to build a wall.",
 }
 
 function PANEL:Init ()
