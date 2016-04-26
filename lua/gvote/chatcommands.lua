@@ -101,6 +101,22 @@ if SERVER then
 			end,
 			"developers"
 		)
+
+		aowl.AddCommand ("voteabort",
+			function (ply, args)
+				if not GVote.CurrentVote then
+					ply:ChatPrint ("No vote is in progress.")
+					return
+				end
+				if not GVote.CurrentVote:IsMolestationAllowed () and
+				   GLib.GetPlayerId (ply) ~= GVote.CurrentVote:GetOwnerId () then
+					ply:ChatPrint ("Molestation of this vote is prohibited.")
+					return
+				end
+				GVote.CurrentVote:Abort ()
+			end,
+			"developers"
+		)
 	end
 	
 	if aowl then
